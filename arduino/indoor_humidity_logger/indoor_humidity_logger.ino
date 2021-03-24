@@ -52,7 +52,7 @@ void loop() {
       Serial.print(temp);
       Serial.print("");
   
-      if (humi + 3 <= avg(last)) {
+      if (humi + 2 <= avg(last)) {
         Serial.println(",1");
       } else {
         Serial.println(",0");
