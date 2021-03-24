@@ -27,7 +27,7 @@ void loop() {
   if(index < buffer) {
     delay(1000);
   } else {
-    delay(2000); 
+    delay(5000); 
   }
 
   // read humidity
