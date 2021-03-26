@@ -27,19 +27,15 @@ with open('data/indoorlog.csv','r') as csvfile:
         else:
             window.append(None)
 
-print(window)
-#plt.plot(x, rhum, label='RHum',color='blue')
 plt.plot(x,avghum, label='avg. hum',color='blue')
 plt.plot(x,window, label='window', color='red')
-plt.xlabel('time')
-plt.ylabel('Humidity')
-plt.title('Indoor Humidity')
+plt.grid(color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
+plt.xlabel('Time')
+plt.ylabel('Relative Humidity')
+plt.title('Indoor Relative Humidity')
 plt.legend()
 plt.gcf().axes[0].xaxis.set_major_locator(qMinutes)
 plt.gcf().axes[0].xaxis.set_minor_locator(minutes)
 plt.gcf().axes[0].xaxis.set_major_formatter(xformatter)
 plt.gcf().autofmt_xdate()
 plt.show()
-
-
-#iTime, iHum, iAvg, iTemp, isOpen = np.loadtxt('datafiles/indoorlog.csv', delimiter=',', unpack=True)
