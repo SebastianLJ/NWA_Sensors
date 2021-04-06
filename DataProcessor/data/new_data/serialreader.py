@@ -2,20 +2,53 @@ import serial
 from datetime import datetime
 import csv
 
-ser = serial.Serial('COM4')
+import matplotlib
+import matplotlib.animation as animation
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import numpy as np
+
+ser = serial.Serial('COM3')
 ser.flushInput()
+
 now = datetime.now()
 part1 = datetime.now().strftime("%Y-%m-%d")
 part2 = datetime.now().strftime("%H-%M-%S")
 
+plot_window = 100
+
+avghum = np.array(np.full([plot_window], None))
+isWindowOpen = np.array(np.full([plot_window], None))
+
+plt.ion()
+fig, ax = plt.subplots()
+line1, = ax.plot(avghum, label='indoor avg. rhum', color='blue', linewidth=2)
+line2, = ax.plot(isWindowOpen, label='window registered as open', color='red', linewidth=2)
+
+
 while True:
-    try:
-        ser_bytes = ser.readline()
-        decoded_bytes = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8"))
-        print(decoded_bytes)
-        with open(part1 + "_" + part2 + ".csv","a", buffering=1) as f:
-            writer = csv.writer(f,delimiter=",")
-            writer.writerow([datetime.now().strftime("%H:%M:%S"),decoded_bytes])
-    except:
-        print("Keyboard Interrupt")
-        break
+    ser_bytes = ser.readline()
+    decoded_bytes = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8")).split(",")
+    print(str(decoded_bytes))
+    with open(part1 + "_" + part2 + ".csv", "a", buffering=1, newline='') as f:
+        writer = csv.writer(f, delimiter=",", quoting=csv.QUOTE_MINIMAL)
+        arrToWrite = []
+        arrToWrite.append(datetime.now().strftime("%H:%M:%S"))
+        arrToWrite += decoded_bytes
+        writer.writerow(arrToWrite)
+
+    avghum = np.append(avghum, float(arrToWrite[2]))
+    avghum = avghum[1:plot_window+1]
+
+    if int(arrToWrite[4]) == 1:
+        isWindowOpen = np.append(isWindowOpen, float(arrToWrite[2]))
+    else:
+        isWindowOpen = np.append(isWindowOpen, None)
+    isWindowOpen = isWindowOpen[1:plot_window+1]
+
+    line1.set_ydata(avghum)
+    line2.set_ydata(isWindowOpen)
+    ax.relim()
+    ax.autoscale_view()
+    fig.canvas.draw()
+    fig.canvas.flush_events()

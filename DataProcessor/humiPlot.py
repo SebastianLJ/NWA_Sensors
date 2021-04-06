@@ -23,11 +23,11 @@ fig, (ax1, ax2) = plt.subplots(2, sharex='all', figsize=(10, 6))
 
 
 def animate(i):
-    with open('data/indoorlog.csv', 'r') as csvfile:
+    with open('data/new_data/2021-04-06_15-37-20.csv', 'r') as csvfile:
         plots = csv.reader(csvfile, delimiter=',')
         for row in plots:
-            stime = re.search('\d\d:\d\d:\d\d', str(row[0])).group()
-            x1.append(datetime.strptime(stime, '%H:%M:%S'))
+            print(row)
+            x1.append(str(row[0]))
             rhum.append(float(row[1]))
             avghum.append(float(row[2]))
             if int(row[4]) == 1:
