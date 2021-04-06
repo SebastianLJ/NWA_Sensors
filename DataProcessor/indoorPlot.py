@@ -10,6 +10,7 @@ filename = '2021-04-06_15-37-20'
 
 time = []
 avghum = []
+temp = []
 window = []
 carbondioxide = []
 tVOC = []
@@ -20,13 +21,14 @@ hours = mdates.HourLocator()
 # noinspection SpellCheckingInspection
 xformatter = mdates.DateFormatter('%H:%M')
 
-fig, (ax1, ax2, ax3) = plt.subplots(3, sharex='all', figsize=(10, 6))
+fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
 
 with open('data/new_data/' + filename + '.csv', 'r') as csvfile:
     plots = csv.reader(csvfile, delimiter=',')
     for row in plots:
         time.append(datetime.strptime(row[0], '%H:%M:%S'))
         avghum.append(float(row[2]))
+        temp.append(float(row[3]))
         if int(row[4]) == 1:
             window.append(float(row[2]))
         else:
@@ -36,9 +38,9 @@ with open('data/new_data/' + filename + '.csv', 'r') as csvfile:
 
 ax1.plot(time, avghum, label='indoor avg. rhum', color='blue', linewidth=2)
 ax1.plot(time, window, label='window registered as open', color='red', linewidth=2)
-
-ax2.plot(time, carbondioxide, label="CO2 level", color='black', linewidth=2)
-ax3.plot(time, tVOC, label="tVOC level", color="red", linewidth=2)
+ax2.plot(time, temp, label='indoor temperature', color ='red', linewidth=2)
+ax3.plot(time, carbondioxide, label="CO2 level", color='black', linewidth=2)
+ax4.plot(time, tVOC, label="tVOC level", color="red", linewidth=2)
 
 fig.text(0.5, 0.04, 'Time', ha='center')
 
@@ -52,12 +54,15 @@ ax2.grid(which='major', color='black', linestyle='-', linewidth=1, alpha=0.5)
 ax2.grid(which='minor', color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
 ax3.grid(which='major', color='black', linestyle='-', linewidth=1, alpha=0.5)
 ax3.grid(which='minor', color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
+ax4.grid(which='major', color='black', linestyle='-', linewidth=1, alpha=0.5)
+ax4.grid(which='minor', color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
 
-fig.autofmt_xdate()
+#fig.autofmt_xdate()
 
 ax1.set_title('Indoor Humidity')
-ax2.set_title('Indoor CO2 Level')
-ax3.set_title('Indoor tVOC Level')
+ax2.set_title('Indoor Temperature')
+ax3.set_title('Indoor CO2 Level')
+ax4.set_title('Indoor tVOC Level')
 fig.legend()
 fig.savefig(fname='plots/indoor_plot_' + filename + '.png')
 
