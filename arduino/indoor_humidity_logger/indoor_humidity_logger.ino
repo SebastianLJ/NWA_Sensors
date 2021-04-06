@@ -44,7 +44,6 @@ void loop() {
     
 
     if (index > buffer) {
-      Serial.print(", ");
       Serial.print(humi);
       Serial.print(", ");
       Serial.print(avg(last));
