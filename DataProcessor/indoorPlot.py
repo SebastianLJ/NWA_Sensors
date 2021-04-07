@@ -23,15 +23,16 @@ window = []
 carbondioxide = []
 tVOC = []
 
-
 minutes = mdates.MinuteLocator(byminute=[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], interval=1)
 qMinutes = mdates.MinuteLocator(byminute=[0, 15, 30, 45], interval=1)
 hours = mdates.HourLocator()
 # noinspection SpellCheckingInspection
 xformatter = mdates.DateFormatter('%H:%M')
 
-fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
+fig1, (ax1, ax2) = plt.subplots(2, sharex='all', figsize=(10, 5))
+fig2, (ax3, ax4) = plt.subplots(2, sharex='all', figsize=(10,5))
 
+#indoor dataread
 with open('data/new_data/' + filename + '.csv', 'r') as csvfile:
     plots = csv.reader(csvfile, delimiter=',')
     for row in plots:
@@ -56,11 +57,15 @@ ax2.plot(time, z_rhum['signals'], label='rhum peaks', color ='red', linewidth=2)
 ax3.plot(time, carbondioxide, label="CO2 level", color='black', linewidth=2)
 ax4.plot(time, z_co2['signals'], label="tVOC level", color="red", linewidth=2)
 
-fig.text(0.5, 0.04, 'Time', ha='center')
+fig1.text(0.5, 0.04, 'Time', ha='center')
+fig2.text(0.5, 0.04, 'Time', ha='center')
 
 ax1.xaxis.set_major_locator(qMinutes)
 ax1.xaxis.set_minor_locator(minutes)
 ax1.xaxis.set_major_formatter(xformatter)
+ax3.xaxis.set_major_locator(qMinutes)
+ax3.xaxis.set_minor_locator(minutes)
+ax3.xaxis.set_major_formatter(xformatter)
 
 ax1.grid(which='major', color='black', linestyle='-', linewidth=1, alpha=0.5)
 ax1.grid(which='minor', color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
@@ -71,14 +76,17 @@ ax3.grid(which='minor', color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
 ax4.grid(which='major', color='black', linestyle='-', linewidth=1, alpha=0.5)
 ax4.grid(which='minor', color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
 
-fig.autofmt_xdate()
+fig1.autofmt_xdate()
+fig2.autofmt_xdate()
 
 ax1.set_title('Indoor Humidity')
 ax2.set_title('Rhum Peaks')
 ax3.set_title('Indoor CO2 Level')
 ax4.set_title('CO2 Peaks')
-fig.legend()
-fig.savefig(fname='plots/indoor_plot_' + filename + '.png')
+fig1.legend()
+fig2.legend()
+fig1.savefig(fname='plots/indoor_hum_' + filename + '.png')
+fig2.savefig(fname='plots/indoor_co2_' + filename + '.png')
 
 
 plt.show()
