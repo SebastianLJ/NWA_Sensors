@@ -13,6 +13,7 @@ co2_lag = 50
 co2_threshold = 4
 co2_influence = 0.5
 
+
 def thresholding_algo(y, lag, threshold, influence):
     signals = np.zeros(len(y))
     filteredY = np.array(y)
