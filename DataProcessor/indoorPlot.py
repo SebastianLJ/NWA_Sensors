@@ -6,14 +6,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-
-# z-score settings
-lag = 50
-threshold = 4
-influence = 0.5
-
-filename = 'indoor_2021-04-08_15-49-05'
+filename = 'indoor_2021-04-09_11-08-59'
 
 time = []
 avghum = []

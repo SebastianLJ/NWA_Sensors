@@ -1,17 +1,19 @@
+# threshold algorithm implemented in python by R Kiselev
+# https://stackoverflow.com/questions/22583391/peak-signal-detection-in-realtime-timeseries-data/43512887#43512887
+
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
 import pylab
 
-filename = 'indoor_2021-04-07_10-32-08'
 # rhum settings
 rhum_lag = 50
-rhum_threshold = 4
-rhum_influence = 0.5
+rhum_threshold = 20
+rhum_influence = 0.2
 # co2 settings
-co2_lag = 50
-co2_threshold = 4
-co2_influence = 0.5
+co2_lag = 30
+co2_threshold = 6
+co2_influence = 0.3
 
 
 def thresholding_algo(y, lag, threshold, influence):
@@ -27,15 +29,12 @@ def thresholding_algo(y, lag, threshold, influence):
                 signals[i] = 1
             else:
                 signals[i] = -1
-
             filteredY[i] = influence * y[i] + (1 - influence) * filteredY[i-1]
-            avgFilter[i] = np.mean(filteredY[(i-lag+1):i+1])
-            stdFilter[i] = np.std(filteredY[(i-lag+1):i+1])
         else:
             signals[i] = 0
             filteredY[i] = y[i]
-            avgFilter[i] = np.mean(filteredY[(i-lag+1):i+1])
-            stdFilter[i] = np.std(filteredY[(i-lag+1):i+1])
+        avgFilter[i] = np.mean(filteredY[(i - lag + 1):i + 1])
+        stdFilter[i] = np.std(filteredY[(i - lag + 1):i + 1])
 
     return dict(signals = np.asarray(signals),
                 avgFilter = np.asarray(avgFilter),
