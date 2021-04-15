@@ -7,6 +7,8 @@
 #include "SparkFunCCS811.h" //Click here to get the library: http://librarymanager/All#SparkFun_CCS811
 #include "DHT.h"
 #define DHTPIN 2
+#define BUTTONPIN 4
+#define LEDPIN 6
 #define DHTTYPE DHT22
 #define CCS811_ADDR 0x5B //Default I2C Address
 
@@ -26,8 +28,13 @@ float avgFilter[lag];
 float getStdFilter[lag];
 bool filterInit = false;
 
+bool isWindowOpen = false;
+int buttonState = 0;
+
 void setup()
 {
+  pinMode(LEDPIN, OUTPUT);
+  pinMode(BUTTONPIN, INPUT);
   Serial.begin(9600);
   dht.begin(); // initialize DHT22
   Wire.begin(); // initialize CCS811
@@ -42,6 +49,18 @@ void setup()
 
 void loop()
 {
+  buttonState = digitalRead(BUTTONPIN);
+
+  if (buttonState == HIGH) {
+    isWindowOpen = !isWindowOpen;
+    if (isWindowOpen) {
+      digitalWrite(LEDPIN, HIGH);
+    } else {
+      digitalWrite(LEDPIN,LOW);
+    }
+  }
+  
+  
   // read humidity
   float humi  = dht.readHumidity();
   float temp  = dht.readTemperature();
@@ -57,16 +76,9 @@ void loop()
       Serial.print(rhum_mean);
       Serial.print(",");
       Serial.print(temp);
-      Serial.print("");
+      Serial.print(",");
   
-      //print threshold res
-      int res = threshold_alg(humi);
-      if (reads < 2*lag) {
-        Serial.print(",0");
-      } else {
-        Serial.print(",");
-        Serial.print(res);
-      }
+      Serial.print(isWindowOpen);
       
       if (ccs.dataAvailable()) {
         // read ccs data
@@ -105,6 +117,10 @@ float avg(float x[]) {
     sum += x[i];
   }
   return sum/lag;
+}
+
+float median(float x[], int xSize){
+  
 }
 
 float getStd(float x[]) {

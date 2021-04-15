@@ -16,6 +16,19 @@ co2_threshold = 6
 co2_influence = 0.3
 
 
+def mean_algo(y,lag, threshold):
+    signals = np.zeros(len(y))
+    for i in range(lag, len(y)):
+        mean = np.mean(y[i-lag:i+1])
+        if y[i] < mean - threshold:
+            signals[i] = -1
+        elif y[i] > mean + threshold:
+            signals[i] = 1
+        else:
+            signals[i] = 0
+    return np.asarray(signals)
+
+
 def thresholding_algo(y, lag, threshold, influence):
     signals = np.zeros(len(y))
     filteredY = np.array(y)

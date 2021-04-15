@@ -44,7 +44,7 @@ while True:
     avghum = avghum[1:plot_window+1]
     thresholdRes = np.append(thresholdRes, float(arrToWrite[4]))
     thresholdRes = thresholdRes[1:plot_window+1]
-    if int(arrToWrite[4]) == -1:
+    if int(arrToWrite[4]) == 1:
         isWindowOpen = np.append(isWindowOpen, float(arrToWrite[2]))
     else:
         isWindowOpen = np.append(isWindowOpen, None)
