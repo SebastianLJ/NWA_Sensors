@@ -23,7 +23,7 @@ fig, (ax1, ax2) = plt.subplots(2, sharex='all', figsize=(10, 6))
 
 
 def animate(i):
-    with open('data/new_data/2021-04-06_15-37-20.csv', 'r') as csvfile:
+    with open('../data/new_data/2021-04-06_15-37-20.csv', 'r') as csvfile:
         plots = csv.reader(csvfile, delimiter=',')
         for row in plots:
             print(row)
@@ -35,7 +35,7 @@ def animate(i):
             else:
                 window.append(None)
 
-    with open('data/outdoorlog.csv', 'r') as csvfile:
+    with open('../data/outdoorlog.csv', 'r') as csvfile:
         plots = csv.reader(csvfile, delimiter=',')
         for row in plots:
             stime = re.search('\d\d:\d\d:\d\d', str(row[0])).group()
