@@ -11,7 +11,7 @@ rhum_lag = 50
 rhum_threshold = 5
 rhum_influence = 0.5
 # co2 settings
-co2_lag = 30
+co2_lag = 50
 co2_threshold = 6
 co2_influence = 0.3
 
