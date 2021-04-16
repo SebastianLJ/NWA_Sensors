@@ -27,6 +27,8 @@ line1, = ax.plot(avghum, label='indoor avg. rhum', color='blue', linewidth=2)
 line2, = ax.plot(isWindowOpen, label='window registered as open', color='red', linewidth=2)
 
 
+# line 32-41 is from the following implementation.
+# https://makersportal.com/blog/2018/2/25/python-datalogger-reading-the-serial-output-from-arduino-to-analyze-data-using-pyserial
 while True:
     ser_bytes = ser.readline()
     decoded_bytes = str(ser_bytes[0:len(ser_bytes)-2].decode("utf-8")).split(",")

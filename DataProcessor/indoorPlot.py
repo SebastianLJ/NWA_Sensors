@@ -6,7 +6,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 
-filename = 'indoor_2021-04-15_14-59-05'
+filename = 'indoor_2021-04-16_09-48-58'
 
 time = []
 avghum = []
@@ -35,7 +35,7 @@ with open('data/new_data/' + filename + '.csv', 'r') as csvfile:
         avghum.append(float(row[2]))
         temp.append(float(row[3]))
         hum_filter.append(int(row[4]))
-        if int(row[4]) == -1:
+        if int(row[4]) == 1:
             window.append(float(row[2]))
         else:
             window.append(None)
@@ -43,6 +43,7 @@ with open('data/new_data/' + filename + '.csv', 'r') as csvfile:
         tVOC.append(float(row[6]))
 
 m_rhum = peak_detection.mean_algo(np.array(rhum), 100, 2)
+m_co2 = peak_detection.mean_algo(np.array(carbondioxide), 10, 100)
 z_rhum = peak_detection.thresholding_algo(np.array(rhum), peak_detection.rhum_lag, peak_detection.rhum_threshold, peak_detection.rhum_influence)['signals']
 z_co2 = peak_detection.thresholding_algo(np.array(carbondioxide), peak_detection.co2_lag, peak_detection.co2_threshold, peak_detection.co2_influence)['signals']
 
@@ -52,7 +53,7 @@ ax1.plot(time, window, label='window registered as open', color='red', linewidth
 ax2.plot(time, m_rhum, label='rhum peaks', color ='red', linewidth=2)
 ax3.plot(time, hum_filter, label='rhum peaks', color ='red', linewidth=2)
 ax4.plot(time, carbondioxide, label="CO2 level", color='black', linewidth=2)
-ax5.plot(time, z_co2, label="tVOC level", color="red", linewidth=2)
+ax5.plot(time, m_co2, label="tVOC level", color="red", linewidth=2)
 
 fig1.text(0.5, 0.04, 'Time', ha='center')
 fig2.text(0.5, 0.04, 'Time', ha='center')
