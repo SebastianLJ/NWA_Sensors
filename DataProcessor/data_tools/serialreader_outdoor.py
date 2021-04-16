@@ -1,6 +1,7 @@
 import serial
 from datetime import datetime
 import csv
+import os.path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +10,7 @@ ser = serial.Serial('COM4')
 ser.flushInput()
 
 now = datetime.now()
-part0 = "data/new_data/outdoor_"
+part0 = os.path.dirname(__file__) + "/../data/new_data/outdoor_"
 part1 = datetime.now().strftime("%Y-%m-%d")
 part2 = datetime.now().strftime("%H-%M-%S")
 

@@ -4,12 +4,13 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import serial
+import os.path
 
 ser = serial.Serial('COM3')
 ser.flushInput()
 
 now = datetime.now()
-part0 = "data/new_data/indoor_"
+part0 = os.path.dirname(__file__) + "/../data/new_data/indoor_"
 part1 = datetime.now().strftime("%Y-%m-%d")
 part2 = datetime.now().strftime("%H-%M-%S")
 
