@@ -8,8 +8,8 @@ import pylab
 
 # rhum settings
 rhum_lag = 50
-rhum_threshold = 20
-rhum_influence = 0.2
+rhum_threshold = 5
+rhum_influence = 0.5
 # co2 settings
 co2_lag = 30
 co2_threshold = 6

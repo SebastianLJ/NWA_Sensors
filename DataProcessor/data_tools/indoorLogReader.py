@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+import os.path
 
 
 def read_file(filename):
@@ -11,8 +12,7 @@ def read_file(filename):
     window = []
     carbondioxide = []
     tVOC = []
-
-    with open('data/new_data/' + filename + '.csv', 'r') as csvfile:
+    with open(os.path.dirname(__file__) + '/../data/new_data/' + filename + '.csv', 'r') as csvfile:
         plots = csv.reader(csvfile, delimiter=',')
         for row in plots:
             time.append(datetime.strptime(row[0], '%H:%M:%S'))

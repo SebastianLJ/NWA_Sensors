@@ -1,6 +1,7 @@
 from signal_processing import peak_detection
 from data_tools import indoorLogReader
 
+
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +27,7 @@ z_co2 = peak_detection.thresholding_algo(np.array(data["CO2"]), peak_detection.c
 ax1.plot(data["time"], data["rHum"], label='indoor rhum', color='lightblue', linewidth=2)
 ax1.plot(data["time"], data["avgHum"], label='indoor avg. rhum', color='blue', linewidth=2)
 ax1.plot(data["time"], data["window"], label='window registered as open', color='red', linewidth=2)
-ax2.plot(data["time"], m_rhum, label='rhum peaks', color ='red', linewidth=2)
+ax2.plot(data["time"], z_rhum, label='rhum peaks', color ='red', linewidth=2)
 ax3.plot(data["time"], data["windowState"], label='rhum peaks', color ='red', linewidth=2)
 ax4.plot(data["time"], data["CO2"], label="CO2 level", color='black', linewidth=2)
 ax5.plot(data["time"], m_co2, label="tVOC level", color="red", linewidth=2)
