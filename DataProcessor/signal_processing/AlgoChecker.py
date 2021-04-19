@@ -6,6 +6,8 @@ from signal_processing import peak_detection
 arduino_delay = 5
 aceptable_delay = 90
 
+files = ['indoor_2021-04-16_09-48-58', 'indoor_2021-04-19_09-42-42']
+
 
 def get_results(filename):
     data = indoorLogReader.read_file(filename)
@@ -24,8 +26,24 @@ def get_results(filename):
                                                                               peak_detection.co2_threshold,
                                                                               peak_detection.co2_influence)["signals"]))
 
+# todo
+def get_results_arr(filenames):
+    x = ("tp", "fp", "tn", "fn", "acc")
+    algs = ("mean_rhum", "mean_co2", "thresholding_rhum", "thresholding_co2")
+    res = dict.fromkeys(algs,dict.fromkeys(x,0))
+    for fname in filenames:
+        y = get_results(fname)
+        for i in range(0,len(algs)):
+            for j in range(0,len(x)):
+                res[algs[i]][x[j]] += y[algs[i]][x[j]]
 
-# todo fix fp in thresholding_algo
+    for i in range(0, len(algs)):
+        res[algs[i]]["acc"] = (res[algs[i]]["tp"] + res[algs[i]]["tn"]) / \
+                              (res[algs[i]]["tp"] + res[algs[i]]["tn"] + res[algs[i]]["fp"] + res[algs[i]]["fn"])
+
+    return res
+
+
 def getAcc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
 
@@ -47,7 +65,7 @@ def getAcc(data, alg_result):
         # fp test
         if alg_result[i] == -1:
             correct = False
-            for j in range(i - arduino_delay * 100, i + 1):
+            for j in range(i - arduino_delay * 120, i + 1):
                 if j > 0 and data["windowState"][j] == 1:
                     correct = True
                     break
