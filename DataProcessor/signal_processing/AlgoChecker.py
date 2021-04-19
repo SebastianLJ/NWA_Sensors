@@ -1,6 +1,6 @@
 import numpy as np
 from data_tools import indoorLogReader
-import peak_detection
+from signal_processing import peak_detection
 
 # delays in seconds
 arduino_delay = 5
@@ -10,21 +10,22 @@ aceptable_delay = 90
 def get_results(filename):
     data = indoorLogReader.read_file(filename)
 
-    return dict(mean_alg_rhum=getAcc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
-                mean_alg_co2=getAcc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
-                thresholding_algo_rhum=getAcc(data,
+    return dict(mean_rhum=getAcc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
+                mean_co2=getAcc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
+                thresholding_rhum=getAcc(data,
                                               peak_detection.thresholding_algo(np.array(data["rHum"]),
                                                                                peak_detection.rhum_lag,
                                                                                peak_detection.rhum_threshold,
                                                                                peak_detection.rhum_influence)[
                                                   "signals"]),
-                thresholding_algo_co2=getAcc(data,
+                thresholding_co2=getAcc(data,
                                              peak_detection.thresholding_algo(np.array(data["CO2"]),
                                                                               peak_detection.co2_lag,
                                                                               peak_detection.co2_threshold,
                                                                               peak_detection.co2_influence)["signals"]))
 
-#todo fix fp in thresholding_algo
+
+# todo fix fp in thresholding_algo
 def getAcc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
 
