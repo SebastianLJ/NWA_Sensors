@@ -31,9 +31,10 @@ def getAcc(data, alg_result):
 
     skip_to_next = False
     correct = False
+    time_since_last_fp = 0
     # tp and fn teset
     for i in range(len(data["windowState"])):
-        if data["windowState"][i] == 1 and alg_result[i] != 0 and not correct:
+        if data["windowState"][i] == 1 and alg_result[i] == -1 and not correct:
             correct = True
             tp += 1
         elif data["windowState"][i - 1] == 1 and data["windowState"][i] == 0 and not correct:
@@ -44,13 +45,16 @@ def getAcc(data, alg_result):
 
     for i in range(len(alg_result)):
         # fp test
-        if alg_result[i] != 0:
+        if alg_result[i] == -1:
             correct = False
             for j in range(i - arduino_delay * 100, i + 1):
                 if j > 0 and data["windowState"][j] == 1:
                     correct = True
                     break
-            if not correct: fp += 1
+            if not correct and time_since_last_fp > 60:
+                fp += 1
+                time_since_last_fp = 0
+        time_since_last_fp += arduino_delay
 
     return dict(tp=tp,
                 fp=fp,
