@@ -13,15 +13,13 @@ def get_results(filename):
     data = indoorLogReader.read_file(filename)
 
     return dict(mean_rhum=getAcc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
-                mean_co2=getAcc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
-                thresholding_rhum=getAcc(data,
-                                              peak_detection.thresholding_algo(np.array(data["rHum"]),
+                mean_co2=getAcc(data, peak_detection.mean_algo(data["CO2"], 10, 100)),
+                thresholding_rhum=getAcc(data, peak_detection.thresholding_algo(np.array(data["rHum"]),
                                                                                peak_detection.rhum_lag,
                                                                                peak_detection.rhum_threshold,
                                                                                peak_detection.rhum_influence)[
                                                   "signals"]),
-                thresholding_co2=getAcc(data,
-                                             peak_detection.thresholding_algo(np.array(data["CO2"]),
+                thresholding_co2=getAcc(data, peak_detection.thresholding_algo(np.array(data["CO2"]),
                                                                               peak_detection.co2_lag,
                                                                               peak_detection.co2_threshold,
                                                                               peak_detection.co2_influence)["signals"]))
@@ -44,8 +42,6 @@ def get_results_arr(filenames):
 
 def getAcc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
-
-    skip_to_next = False
     correct = False
     time_since_last_fp = 0
     # tp and fn teset
@@ -63,7 +59,7 @@ def getAcc(data, alg_result):
         # fp test
         if alg_result[i] == -1:
             correct = False
-            for j in range(i - arduino_delay * 120, i + 1):
+            for j in range(i - int((5 * 60) / arduino_delay), i+1):
                 if j > 0 and data["windowState"][j] == 1:
                     correct = True
                     break
@@ -76,6 +72,6 @@ def getAcc(data, alg_result):
                 fp=fp,
                 tn=tn,
                 fn=fn,
-                acc=(tp + tn) / (tp + tn + fp + fn))
-
-print(get_results_arr(files))
+                acc=(tp + tn) / (tp + tn + fp + fn),
+                fptest = fptest,
+                count = count)
