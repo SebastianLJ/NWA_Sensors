@@ -26,16 +26,14 @@ def get_results(filename):
                                                                               peak_detection.co2_threshold,
                                                                               peak_detection.co2_influence)["signals"]))
 
-# todo
 def get_results_arr(filenames):
-    x = ("tp", "fp", "tn", "fn", "acc")
+    x = ("tp", "fp", "tn", "fn")
     algs = ("mean_rhum", "mean_co2", "thresholding_rhum", "thresholding_co2")
     res = dict.fromkeys(algs,dict.fromkeys(x,0))
     for fname in filenames:
         y = get_results(fname)
         for i in range(0,len(algs)):
-            for j in range(0,len(x)):
-                res[algs[i]][x[j]] += y[algs[i]][x[j]]
+            res[algs[i]] = {k: res[algs[i]].get(k, 0) + y[algs[i]].get(k, 0) for k in set(y[algs[i]])}
 
     for i in range(0, len(algs)):
         res[algs[i]]["acc"] = (res[algs[i]]["tp"] + res[algs[i]]["tn"]) / \
@@ -79,3 +77,5 @@ def getAcc(data, alg_result):
                 tn=tn,
                 fn=fn,
                 acc=(tp + tn) / (tp + tn + fp + fn))
+
+print(get_results_arr(files))
