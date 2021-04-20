@@ -72,6 +72,4 @@ def getAcc(data, alg_result):
                 fp=fp,
                 tn=tn,
                 fn=fn,
-                acc=(tp + tn) / (tp + tn + fp + fn),
-                fptest = fptest,
-                count = count)
+                acc=(tp + tn) / (tp + tn + fp + fn))
