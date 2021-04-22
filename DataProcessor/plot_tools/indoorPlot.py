@@ -6,9 +6,9 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 
-filename = 'indoor_2021-04-15_14-59-05'
+#filename = 'indoor_2021-04-15_14-59-05'
 #filename = 'indoor_2021-04-16_09-48-58'
-#"filename = 'indoor_2021-04-19_09-42-42'
+filename = 'indoor_2021-04-19_09-42-42'
 
 minutes = mdates.MinuteLocator(byminute=[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], interval=1)
 qMinutes = mdates.MinuteLocator(byminute=[0, 15, 30, 45], interval=1)
@@ -99,7 +99,7 @@ def plotFiltersHum():
     ax3.set_title('Mean Filter')
     ax4.set_title('Z-Score Filter')
     fig.legend()
-
+    fig.savefig(fname='plots/indoor_hum_' + filename + '.png')
     plt.show()
 
 
@@ -142,6 +142,8 @@ def plotFiltersCO2():
     ax3.set_title('Mean Filter')
     ax4.set_title('Z-Score Filter')
     fig.legend()
+
+    fig.savefig(fname='plots/indoor_co2_' + filename + '.png')
 
     plt.show()
 

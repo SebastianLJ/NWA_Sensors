@@ -6,7 +6,7 @@ from signal_processing import peak_detection
 arduino_delay = 5
 aceptable_delay = 90
 
-files = ['indoor_2021-04-16_09-48-58', 'indoor_2021-04-19_09-42-42']
+files = ['indoor_2021-04-16_09-48-58', 'indoor_2021-04-19_09-42-42', 'indoor_2021-04-15_14-59-05']
 
 
 def get_results(filename):
