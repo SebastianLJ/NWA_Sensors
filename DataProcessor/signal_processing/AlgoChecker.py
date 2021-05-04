@@ -12,14 +12,14 @@ files = ['indoor_2021-04-16_09-48-58', 'indoor_2021-04-19_09-42-42', 'indoor_202
 def get_results(filename):
     data = indoorLogReader.read_file(filename)
 
-    return dict(mean_rhum=getAcc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
-                mean_co2=getAcc(data, peak_detection.mean_algo(data["CO2"], 10, 100)),
-                thresholding_rhum=getAcc(data, peak_detection.thresholding_algo(np.array(data["rHum"]),
+    return dict(mean_rhum=get_true_acc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
+                mean_co2=get_true_acc(data, peak_detection.mean_algo(data["CO2"], 10, 100)),
+                thresholding_rhum=get_true_acc(data, peak_detection.thresholding_algo(np.array(data["rHum"]),
                                                                                peak_detection.rhum_lag,
                                                                                peak_detection.rhum_threshold,
                                                                                peak_detection.rhum_influence)[
                                                   "signals"]),
-                thresholding_co2=getAcc(data, peak_detection.thresholding_algo(np.array(data["CO2"]),
+                thresholding_co2=get_true_acc(data, peak_detection.thresholding_algo(np.array(data["CO2"]),
                                                                               peak_detection.co2_lag,
                                                                               peak_detection.co2_threshold,
                                                                               peak_detection.co2_influence)["signals"]))
@@ -40,6 +40,7 @@ def get_results_arr(filenames):
     return res
 
 
+# can only increment tp once per window
 def getAcc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
     correct = False
@@ -68,8 +69,38 @@ def getAcc(data, alg_result):
                 time_since_last_fp = 0
         time_since_last_fp += arduino_delay
 
-    return dict(tp=tp,
-                fp=fp,
-                tn=tn,
-                fn=fn,
+    start_sat, end_sat = False, False
+    start, end = 0, 0
+    for i in range(len(data["windowState"])):
+        if data["windowState"][i] == 0 and not start_sat:
+            start = i
+            start_sat = True
+        if i > start and data["windowState"][i-1] == 0 and (data["windowState"][i] == 1 or i == len(data["windowState"])-1):
+            end = i
+            end_sat = True
+        if start_sat and end_sat:
+            s = np.sum(alg_result[start:end])
+            print("S: " + str(s))
+            if s == 0:
+                tn += 1
+            start_sat = False
+            end_sat = False
+
+    return dict(tp=tp, fp=fp, tn=tn, fn=fn,
+                acc=(tp + tn) / (tp + tn + fp + fn))
+
+def get_true_acc(data, alg_result):
+    tp, fp, tn, fn = 0, 0, 0, 0
+    window = data["windowState"]
+    for i in range(len(alg_result)):
+        if alg_result[i] == 0 and window[i] == 0:
+            tn += 1
+        elif alg_result[i] == 0 and window[i] == 1:
+            fn += 1
+        elif alg_result[i] != 0 and window[i] == 0:
+            fp += 1
+        elif alg_result[i] != 0 and window[i] == 1:
+            tp += 1
+
+    return dict(tp=tp, fp=fp, tn=tn, fn=fn,
                 acc=(tp + tn) / (tp + tn + fp + fn))

@@ -26,7 +26,21 @@ def mean_algo(y,lag, threshold):
             signals[i] = 1
         else:
             signals[i] = 0
-    return np.asarray(signals)
+    return np.asarray(mean_clean_up(signals))
+    #return np.asarray(signals)
+
+def mean_clean_up(signals):
+    clean_signals = np.zeros(len(signals))
+    for i in range(len(signals)):
+        if signals[i] != 0:
+            start = i
+            end = i
+            for j in range(i + 1, i+200):
+                if signals[j] != 0:
+                    end = j
+                    break
+            clean_signals[start:end + 1] = 1
+    return clean_signals
 
 
 def thresholding_algo(y, lag, threshold, influence):
