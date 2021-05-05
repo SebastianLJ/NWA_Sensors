@@ -12,17 +12,17 @@ files = ['indoor_2021-04-16_09-48-58', 'indoor_2021-04-19_09-42-42', 'indoor_202
 def get_results(filename):
     data = indoorLogReader.read_file(filename)
 
-    return dict(mean_rhum=get_true_acc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
-                mean_co2=get_true_acc(data, peak_detection.mean_algo(data["CO2"], 10, 100)),
-                thresholding_rhum=get_true_acc(data, peak_detection.thresholding_algo(np.array(data["rHum"]),
-                                                                               peak_detection.rhum_lag,
-                                                                               peak_detection.rhum_threshold,
-                                                                               peak_detection.rhum_influence)[
+    return dict(mean_rhum=get_relative_acc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
+                mean_co2=get_relative_acc(data, peak_detection.mean_algo(data["CO2"], 10, 100)),
+                thresholding_rhum=get_relative_acc(data, peak_detection.thresholding_algo(np.array(data["rHum"]),
+                                                                                          peak_detection.rhum_lag,
+                                                                                          peak_detection.rhum_threshold,
+                                                                                          peak_detection.rhum_influence)[
                                                   "signals"]),
-                thresholding_co2=get_true_acc(data, peak_detection.thresholding_algo(np.array(data["CO2"]),
-                                                                              peak_detection.co2_lag,
-                                                                              peak_detection.co2_threshold,
-                                                                              peak_detection.co2_influence)["signals"]))
+                thresholding_co2=get_relative_acc(data, peak_detection.thresholding_algo(np.array(data["CO2"]),
+                                                                                         peak_detection.co2_lag,
+                                                                                         peak_detection.co2_threshold,
+                                                                                         peak_detection.co2_influence)["signals"]))
 
 def get_results_arr(filenames):
     x = ("tp", "fp", "tn", "fn")
@@ -41,24 +41,41 @@ def get_results_arr(filenames):
 
 
 # can only increment tp once per window
-def getAcc(data, alg_result):
+def get_relative_acc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
     correct = False
     time_since_last_fp = 0
+    start_sat, end_sat = False, False
+    start, end = 0, 0
     # tp and fn teset
     for i in range(len(data["windowState"])):
-        if data["windowState"][i] == 1 and alg_result[i] == -1 and not correct:
+        if data["windowState"][i] == 1 and alg_result[i] != 0 and not correct:
             correct = True
             tp += 1
         elif data["windowState"][i - 1] == 1 and data["windowState"][i] == 0 and not correct:
             fn += 1
 
-        if data["windowState"][i] == 0 and correct:
+        elif data["windowState"][i] == 0 and correct:
             correct = False
+
+        if data["windowState"][i] == 0 and not start_sat:
+            start = i
+            start_sat = True
+
+        if i > start and data["windowState"][i-1] == 0 and (data["windowState"][i] == 1 or i == len(data["windowState"])-1):
+            end = i
+            end_sat = True
+        if start_sat and end_sat:
+            fi = np.where(alg_result[start:end] == 0)[0][0]
+            s = np.sum(alg_result[start+fi:end])
+            if s == 0:
+                tn += 1
+            start_sat = False
+            end_sat = False
 
     for i in range(len(alg_result)):
         # fp test
-        if alg_result[i] == -1:
+        if alg_result[i] != 0:
             correct = False
             for j in range(i - int((5 * 60) / arduino_delay), i+1):
                 if j > 0 and data["windowState"][j] == 1:
@@ -68,23 +85,6 @@ def getAcc(data, alg_result):
                 fp += 1
                 time_since_last_fp = 0
         time_since_last_fp += arduino_delay
-
-    start_sat, end_sat = False, False
-    start, end = 0, 0
-    for i in range(len(data["windowState"])):
-        if data["windowState"][i] == 0 and not start_sat:
-            start = i
-            start_sat = True
-        if i > start and data["windowState"][i-1] == 0 and (data["windowState"][i] == 1 or i == len(data["windowState"])-1):
-            end = i
-            end_sat = True
-        if start_sat and end_sat:
-            s = np.sum(alg_result[start:end])
-            print("S: " + str(s))
-            if s == 0:
-                tn += 1
-            start_sat = False
-            end_sat = False
 
     return dict(tp=tp, fp=fp, tn=tn, fn=fn,
                 acc=(tp + tn) / (tp + tn + fp + fn))

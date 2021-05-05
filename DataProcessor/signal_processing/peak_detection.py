@@ -36,7 +36,7 @@ def mean_clean_up(signals):
             start = i
             end = i
             for j in range(i + 1, i+200):
-                if signals[j] != 0:
+                if j < len(signals) and signals[j] != 0:
                     end = j
                     break
             clean_signals[start:end + 1] = 1
