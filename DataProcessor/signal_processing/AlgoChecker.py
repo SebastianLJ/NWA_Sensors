@@ -47,7 +47,7 @@ def get_relative_acc(data, alg_result):
     time_since_last_fp = 0
     start_sat, end_sat = False, False
     start, end = 0, 0
-    # tp and fn teset
+    # tp and fn
     for i in range(len(data["windowState"])):
         if data["windowState"][i] == 1 and alg_result[i] != 0 and not correct:
             correct = True
@@ -86,8 +86,7 @@ def get_relative_acc(data, alg_result):
                 time_since_last_fp = 0
         time_since_last_fp += arduino_delay
 
-    return dict(tp=tp, fp=fp, tn=tn, fn=fn,
-                acc=(tp + tn) / (tp + tn + fp + fn))
+    return get_conf_matrix(tp, fp, tn ,fn)
 
 def get_true_acc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
@@ -102,5 +101,12 @@ def get_true_acc(data, alg_result):
         elif alg_result[i] != 0 and window[i] == 1:
             tp += 1
 
-    return dict(tp=tp, fp=fp, tn=tn, fn=fn,
-                acc=(tp + tn) / (tp + tn + fp + fn))
+    return get_conf_matrix(tp, fp, tn ,fn)
+
+def get_conf_matrix(tp, fp, tn ,fn):
+    cm = dict(tp=tp, fp=fp, tn=tn, fn=fn)
+    cm["tpr"] = tp / (tp + fn)
+    cm["tnr"] = tn / (tn + fp)
+    cm["ppv"] = tp / (tp + fp)
+    cm["acc"] = (tp + tn) / (tp + tn+ fp + fn)
+    return cm
