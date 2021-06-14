@@ -1,19 +1,22 @@
 import numpy as np
 from data_tools import indoorLogReader
 from signal_processing import peak_detection
+from data_tools import algoSettings
 
 # delays in seconds
 arduino_delay = 5
 aceptable_delay = 90
 
-files = ['indoor_2021-04-16_09-48-58', 'indoor_2021-04-19_09-42-42', 'indoor_2021-04-15_14-59-05']
-
 
 def get_results(filename):
     data = indoorLogReader.read_file(filename)
 
-    return dict(mean_rhum=get_relative_acc(data, peak_detection.mean_algo(data["rHum"], 100, 2)),
-                mean_co2=get_relative_acc(data, peak_detection.mean_algo(data["CO2"], 10, 100)),
+    return dict(mean_rhum=get_relative_acc(data, peak_detection.mean_algo(data["rHum"],
+                                                                          algoSettings.hum_lag,
+                                                                          algoSettings.hum_threshold)),
+                mean_co2=get_relative_acc(data, peak_detection.mean_algo(data["CO2"],
+                                                                         algoSettings.co2_lag,
+                                                                         algoSettings.co2_threshold)),
                 thresholding_rhum=get_relative_acc(data, peak_detection.thresholding_algo(np.array(data["rHum"]),
                                                                                           peak_detection.rhum_lag,
                                                                                           peak_detection.rhum_threshold,
@@ -52,9 +55,10 @@ def get_relative_acc(data, alg_result):
         if data["windowState"][i] == 1 and alg_result[i] != 0 and not correct:
             correct = True
             tp += 1
+            print("tp: " + str(i))
         elif data["windowState"][i - 1] == 1 and data["windowState"][i] == 0 and not correct:
             fn += 1
-
+            print("fn: " + str(i))
         elif data["windowState"][i] == 0 and correct:
             correct = False
 
@@ -66,8 +70,12 @@ def get_relative_acc(data, alg_result):
             end = i
             end_sat = True
         if start_sat and end_sat:
-            fi = np.where(alg_result[start:end] == 0)[0][0]
-            s = np.sum(alg_result[start+fi:end])
+            matches = np.where(alg_result[start:end] == 0)
+            if matches[0].size > 0:
+                fi = matches[0][0]
+                s = np.sum(alg_result[start+fi:end])
+            else:
+                s = 0
             if s == 0:
                 tn += 1
             start_sat = False
@@ -75,18 +83,11 @@ def get_relative_acc(data, alg_result):
 
     for i in range(len(alg_result)):
         # fp test
-        if alg_result[i] != 0:
-            correct = False
-            for j in range(i - int((5 * 60) / arduino_delay), i+1):
-                if j > 0 and data["windowState"][j] == 1:
-                    correct = True
-                    break
-            if not correct and time_since_last_fp > 60:
-                fp += 1
-                time_since_last_fp = 0
-        time_since_last_fp += arduino_delay
+        if alg_result[i] != 0 and alg_result[i-1] == 0 and data["windowState"][i] == 0:
+            fp += 1
 
-    return get_conf_matrix(tp, fp, tn ,fn)
+    return get_conf_matrix(tp, fp, tn, fn)
+
 
 def get_true_acc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
@@ -101,12 +102,25 @@ def get_true_acc(data, alg_result):
         elif alg_result[i] != 0 and window[i] == 1:
             tp += 1
 
-    return get_conf_matrix(tp, fp, tn ,fn)
+    return get_conf_matrix(tp, fp, tn, fn)
+
 
 def get_conf_matrix(tp, fp, tn ,fn):
     cm = dict(tp=tp, fp=fp, tn=tn, fn=fn)
-    cm["tpr"] = tp / (tp + fn)
-    cm["tnr"] = tn / (tn + fp)
-    cm["ppv"] = tp / (tp + fp)
-    cm["acc"] = (tp + tn) / (tp + tn+ fp + fn)
+    if tp + fn > 0:
+        cm["tpr"] = tp / (tp + fn)
+    else:
+        cm["tpr"] = 0
+    if tn + fp > 0:
+        cm["tnr"] = tn / (tn + fp)
+    else:
+        cm["tnr"] = 0
+    if tp + fp > 0:
+        cm["ppv"] = tp / (tp + fp)
+    else:
+        cm["ppv"] = 0
+    if tp + tn + fp+ fn > 0:
+        cm["acc"] = (tp + tn) / (tp + tn+ fp + fn)
+    else:
+        cm["acc"] = 0
     return cm
