@@ -1,6 +1,7 @@
 from signal_processing import peak_detection
 from signal_processing import AlgoChecker
 from data_tools import indoorLogReader
+from data_tools import algoSettings
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -66,7 +67,7 @@ def plot1():
 def plotFiltersHum():
     # plot rhum, real window state, filters
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
-    m_rhum = peak_detection.mean_algo(np.array(data["rHum"]), 100, 2)
+    m_rhum = peak_detection.mean_algo(np.array(data["rHum"]), algoSettings.hum_lag, algoSettings.hum_threshold)
     z_rhum = \
         peak_detection.thresholding_algo(np.array(data["rHum"]), peak_detection.rhum_lag, peak_detection.rhum_threshold,
                                          peak_detection.rhum_influence)['signals']
@@ -109,7 +110,7 @@ def plotFiltersCO2():
     # plot co2, real window state, filters
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
 
-    m_co2 = peak_detection.mean_algo(np.array(data["CO2"]), 100, 75)
+    m_co2 = peak_detection.mean_algo(np.array(data["CO2"]), algoSettings.co2_lag, algoSettings.co2_threshold)
     z_co2 = \
         peak_detection.thresholding_algo(np.array(data["CO2"]), peak_detection.co2_lag, peak_detection.co2_threshold,
                                          peak_detection.co2_influence)['signals']

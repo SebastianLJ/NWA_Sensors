@@ -29,6 +29,7 @@ def mean_algo(y,lag, threshold):
     return np.asarray(mean_clean_up(signals))
     #return np.asarray(signals)
 
+
 def mean_clean_up(signals):
     clean_signals = np.zeros(len(signals))
     for i in range(len(signals)):
