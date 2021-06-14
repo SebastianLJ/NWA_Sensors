@@ -20,7 +20,7 @@ def mean_algo(y,lag, threshold):
     signals = np.zeros(len(y))
     for i in range(lag, len(y)):
         mean = np.mean(y[i-lag:i+1])
-        if y[i] < mean - threshold:
+        if abs(mean - y[i]) > threshold:
             signals[i] = -1
         elif y[i] > mean + threshold:
             signals[i] = 1

@@ -66,8 +66,12 @@ def get_relative_acc(data, alg_result):
             end = i
             end_sat = True
         if start_sat and end_sat:
-            fi = np.where(alg_result[start:end] == 0)[0][0]
-            s = np.sum(alg_result[start+fi:end])
+            matches = np.where(alg_result[start:end] == 0)
+            if matches[0].size > 0:
+                fi = matches[0][0]
+                s = np.sum(alg_result[start+fi:end])
+            else:
+                s = 0
             if s == 0:
                 tn += 1
             start_sat = False
@@ -86,7 +90,8 @@ def get_relative_acc(data, alg_result):
                 time_since_last_fp = 0
         time_since_last_fp += arduino_delay
 
-    return get_conf_matrix(tp, fp, tn ,fn)
+    return get_conf_matrix(tp, fp, tn, fn)
+
 
 def get_true_acc(data, alg_result):
     tp, fp, tn, fn = 0, 0, 0, 0
@@ -101,12 +106,25 @@ def get_true_acc(data, alg_result):
         elif alg_result[i] != 0 and window[i] == 1:
             tp += 1
 
-    return get_conf_matrix(tp, fp, tn ,fn)
+    return get_conf_matrix(tp, fp, tn, fn)
+
 
 def get_conf_matrix(tp, fp, tn ,fn):
     cm = dict(tp=tp, fp=fp, tn=tn, fn=fn)
-    cm["tpr"] = tp / (tp + fn)
-    cm["tnr"] = tn / (tn + fp)
-    cm["ppv"] = tp / (tp + fp)
-    cm["acc"] = (tp + tn) / (tp + tn+ fp + fn)
+    if tp + fn > 0:
+        cm["tpr"] = tp / (tp + fn)
+    else:
+        cm["tpr"] = 0
+    if tn + fp > 0:
+        cm["tnr"] = tn / (tn + fp)
+    else:
+        cm["tnr"] = 0
+    if tp + fp > 0:
+        cm["ppv"] = tp / (tp + fp)
+    else:
+        cm["ppv"] = 0
+    if tp + tn + fp+ fn > 0:
+        cm["acc"] = (tp + tn) / (tp + tn+ fp + fn)
+    else:
+        cm["acc"] = 0
     return cm
