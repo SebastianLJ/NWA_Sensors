@@ -6,7 +6,7 @@ import numpy as np
 import serial
 import os.path
 
-ser = serial.Serial('/dev/cu.usbmodem142101')
+ser = serial.Serial('COM3')
 ser.flushInput()
 
 now = datetime.now()
