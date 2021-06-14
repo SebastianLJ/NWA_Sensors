@@ -8,7 +8,8 @@ import numpy as np
 
 #filename = 'indoor_2021-04-15_14-59-05'
 #filename = 'indoor_2021-04-16_09-48-58'
-filename = 'indoor_2021-04-19_09-42-42'
+#filename = 'indoor_2021-04-19_09-42-42'
+filename = 'indoor_2021-06-11_11-03-18'
 
 minutes = mdates.MinuteLocator(byminute=[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], interval=1)
 qMinutes = mdates.MinuteLocator(byminute=[0, 15, 30, 45], interval=1)
@@ -64,7 +65,7 @@ def plot1():
 def plotFiltersHum():
     # plot rhum, real window state, filters
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
-    m_rhum = peak_detection.mean_algo(np.array(data["rHum"]), 100, 2)
+    m_rhum = peak_detection.mean_algo(np.array(data["rHum"]), 100, 1)
     z_rhum = \
         peak_detection.thresholding_algo(np.array(data["rHum"]), peak_detection.rhum_lag, peak_detection.rhum_threshold,
                                          peak_detection.rhum_influence)['signals']
@@ -107,7 +108,7 @@ def plotFiltersCO2():
     # plot co2, real window state, filters
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
 
-    m_co2 = peak_detection.mean_algo(np.array(data["CO2"]), 10, 100)
+    m_co2 = peak_detection.mean_algo(np.array(data["CO2"]), 100, 200)
     z_co2 = \
         peak_detection.thresholding_algo(np.array(data["CO2"]), peak_detection.co2_lag, peak_detection.co2_threshold,
                                          peak_detection.co2_influence)['signals']
