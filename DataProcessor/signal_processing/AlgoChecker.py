@@ -55,10 +55,8 @@ def get_relative_acc(data, alg_result):
         if data["windowState"][i] == 1 and alg_result[i] != 0 and not correct:
             correct = True
             tp += 1
-            print("tp: " + str(i))
         elif data["windowState"][i - 1] == 1 and data["windowState"][i] == 0 and not correct:
             fn += 1
-            print("fn: " + str(i))
         elif data["windowState"][i] == 0 and correct:
             correct = False
 
