@@ -7,22 +7,20 @@ import csv
 import pylab
 
 # rhum settings
-rhum_lag = 50
-rhum_threshold = 5
+rhum_lag = 100
+rhum_threshold = 4
 rhum_influence = 0.5
 # co2 settings
-co2_lag = 50
+co2_lag = 100
 co2_threshold = 6
-co2_influence = 0.3
+co2_influence = 0.5
 
 
 def mean_algo(y,lag, threshold):
     signals = np.zeros(len(y))
     for i in range(lag, len(y)):
         mean = np.mean(y[i-lag:i+1])
-        if abs(mean - y[i]) > threshold:
-            signals[i] = -1
-        elif y[i] > mean + threshold:
+        if mean - y[i] > threshold:
             signals[i] = 1
         else:
             signals[i] = 0
@@ -52,11 +50,8 @@ def thresholding_algo(y, lag, threshold, influence):
     avgFilter[lag - 1] = np.mean(y[0:lag])
     stdFilter[lag - 1] = np.std(y[0:lag])
     for i in range(lag, len(y)):
-        if abs(y[i] - avgFilter[i-1]) > threshold * stdFilter [i-1]:
-            if y[i] > avgFilter[i-1]:
-                signals[i] = 1
-            else:
-                signals[i] = -1
+        if avgFilter[i-1] - y[i] > threshold * stdFilter [i-1]:
+            signals[i] = 1
             filteredY[i] = influence * y[i] + (1 - influence) * filteredY[i-1]
         else:
             signals[i] = 0

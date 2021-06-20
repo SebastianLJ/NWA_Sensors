@@ -7,11 +7,11 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 
-#filename = 'indoor_2021-04-15_14-59-05'
-#filename = 'indoor_2021-04-16_09-48-58'
-#filename = 'indoor_2021-04-19_09-42-42'
-#filename = 'indoor_2021-06-11_11-03-18'
-filename = 'indoor_2021-06-14_10-08-13'
+#maj
+filename = 'indoor_2021-04-19_09-42-42'
+
+#juni
+#filename = 'indoor_2021-06-14_10-08-13'
 
 minutes = mdates.MinuteLocator(byminute=[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], interval=1)
 qMinutes = mdates.MinuteLocator(byminute=[0, 15, 30, 45], interval=1)
@@ -73,9 +73,11 @@ def plotFiltersHum():
                                          peak_detection.rhum_influence)['signals']
     acc_res = AlgoChecker.get_results(filename)
 
-    ax1.plot(data["time"], data["rHum"], label='indoor rhum', color='lightblue', linewidth=2)
-    ax1.plot(data["time"], data["avgHum"], label='indoor avg. rhum', color='blue', linewidth=2)
-    ax1.plot(data["time"], data["window"], color='red', linewidth=2)
+    ax1.plot(data["time"], data["rHum"], label='indoor rhum', color='blue', linewidth=2)
+    #ax1.plot(data["time"], data["avgHum"], label='indoor avg. rhum', color='royalblue', linewidth=2)
+    #ax1.plot(data["time"], data["window"], color='red', linewidth=2)
+    ax1.plot(data["time"], list(map(lambda x: x - algoSettings.hum_threshold, data["avgHum"])), label="lower threshold",
+             color="red", linewidth=2, alpha=0.8)
     ax2.plot(data["time"], data["windowState"], label='window state', color='red', linewidth=2)
     ax3.plot(data["time"], m_rhum, label='mean filter, acc: ' + str('%.2f' % acc_res["mean_rhum"]["acc"]), color='darkblue', linewidth=2)
     ax4.plot(data["time"], z_rhum, label='z-score filter, acc: ' + str('%.2f' % acc_res["thresholding_rhum"]["acc"]), color='darkgreen', linewidth=2)
@@ -101,7 +103,7 @@ def plotFiltersHum():
     ax2.set_title('Window State')
     ax3.set_title('Mean Filter')
     ax4.set_title('Z-Score Filter')
-    fig.legend()
+    #fig.legend()
     fig.savefig(fname='plots/indoor_hum_' + filename + '.png')
     plt.show()
 
@@ -151,5 +153,6 @@ def plotFiltersCO2():
     plt.show()
 
 plotFiltersHum()
-plotFiltersCO2()
+#plotFiltersCO2()
+#plot1()
 print(AlgoChecker.get_results(filename))
