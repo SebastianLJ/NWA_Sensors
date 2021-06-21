@@ -1,6 +1,7 @@
-from signal_processing import peak_detection
-from signal_processing import AlgoChecker
-from data_tools import indoorLogReader
+from signal_processing import algorithms
+from signal_processing import algoChecker
+
+from data_tools import logReader
 from data_tools import algoSettings
 
 import matplotlib.dates as mdates
@@ -19,7 +20,7 @@ hours = mdates.HourLocator()
 # noinspection SpellCheckingInspection
 xformatter = mdates.DateFormatter('%H:%M')
 
-data = indoorLogReader.read_file(filename)
+data = logReader.readFile(filename)
 
 
 def plot1():
@@ -67,11 +68,11 @@ def plot1():
 def plotFiltersHum():
     # plot rhum, real window state, filters
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
-    m_rhum = peak_detection.mean_algo(np.array(data["rHum"]), algoSettings.hum_lag, algoSettings.hum_threshold)
+    m_rhum = algorithms.mean_algo(np.array(data["rHum"]), algoSettings.hum_lag, algoSettings.hum_threshold)
     z_rhum = \
-        peak_detection.thresholding_algo(np.array(data["rHum"]), peak_detection.rhum_lag, peak_detection.rhum_threshold,
-                                         peak_detection.rhum_influence)['signals']
-    acc_res = AlgoChecker.get_results(filename)
+        algorithms.standard_score_algo(np.array(data["rHum"]), algorithms.rhum_lag, algorithms.rhum_threshold,
+                                       algorithms.rhum_influence)['signals']
+    acc_res = algoChecker.get_results(filename)
 
     ax1.plot(data["time"], data["rHum"], label='indoor rhum', color='blue', linewidth=2)
     #ax1.plot(data["time"], data["avgHum"], label='indoor avg. rhum', color='royalblue', linewidth=2)
@@ -112,11 +113,11 @@ def plotFiltersCO2():
     # plot co2, real window state, filters
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all', figsize=(10, 10))
 
-    m_co2 = peak_detection.mean_algo(np.array(data["CO2"]), algoSettings.co2_lag, algoSettings.co2_threshold)
+    m_co2 = algorithms.mean_algo(np.array(data["CO2"]), algoSettings.co2_lag, algoSettings.co2_threshold)
     z_co2 = \
-        peak_detection.thresholding_algo(np.array(data["CO2"]), peak_detection.co2_lag, peak_detection.co2_threshold,
-                                         peak_detection.co2_influence)['signals']
-    acc_res = AlgoChecker.get_results(filename)
+        algorithms.standard_score_algo(np.array(data["CO2"]), algorithms.co2_lag, algorithms.co2_threshold,
+                                       algorithms.co2_influence)['signals']
+    acc_res = algoChecker.get_results(filename)
 
     ax1.plot(data["time"], data["CO2"], label='indoor rhum', color='blue', linewidth=2)
     ax2.plot(data["time"], data["windowState"], label='window state', color='red', linewidth=2)
@@ -155,4 +156,4 @@ def plotFiltersCO2():
 plotFiltersHum()
 #plotFiltersCO2()
 #plot1()
-print(AlgoChecker.get_results(filename))
+print(algoChecker.get_results(filename))

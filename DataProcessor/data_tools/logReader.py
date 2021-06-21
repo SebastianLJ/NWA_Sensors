@@ -3,7 +3,7 @@ from datetime import datetime
 import os.path
 
 
-def read_file(filename):
+def readFile(filename):
     time = []
     avghum = []
     rhum = []

@@ -1,6 +1,6 @@
 import numpy as np
-from data_tools import indoorLogReader
-from signal_processing import peak_detection
+from data_tools import logReader
+from signal_processing import algorithms
 from data_tools import algoSettings
 
 # delays in seconds
@@ -9,23 +9,23 @@ aceptable_delay = 90
 
 
 def get_results(filename):
-    data = indoorLogReader.read_file(filename)
+    data = logReader.readFile(filename)
 
-    return dict(mean_rhum=get_relative_acc(data, peak_detection.mean_algo(data["rHum"],
-                                                                          algoSettings.hum_lag,
-                                                                          algoSettings.hum_threshold)),
-                mean_co2=get_relative_acc(data, peak_detection.mean_algo(data["CO2"],
-                                                                         algoSettings.co2_lag,
-                                                                         algoSettings.co2_threshold)),
-                thresholding_rhum=get_relative_acc(data, peak_detection.thresholding_algo(np.array(data["rHum"]),
-                                                                                          peak_detection.rhum_lag,
-                                                                                          peak_detection.rhum_threshold,
-                                                                                          peak_detection.rhum_influence)[
+    return dict(mean_rhum=get_relative_acc(data, algorithms.mean_algo(data["rHum"],
+                                                                      algoSettings.hum_lag,
+                                                                      algoSettings.hum_threshold)),
+                mean_co2=get_relative_acc(data, algorithms.mean_algo(data["CO2"],
+                                                                     algoSettings.co2_lag,
+                                                                     algoSettings.co2_threshold)),
+                thresholding_rhum=get_relative_acc(data, algorithms.standard_score_algo(np.array(data["rHum"]),
+                                                                                        algorithms.rhum_lag,
+                                                                                        algorithms.rhum_threshold,
+                                                                                        algorithms.rhum_influence)[
                                                   "signals"]),
-                thresholding_co2=get_relative_acc(data, peak_detection.thresholding_algo(np.array(data["CO2"]),
-                                                                                         peak_detection.co2_lag,
-                                                                                         peak_detection.co2_threshold,
-                                                                                         peak_detection.co2_influence)["signals"]))
+                thresholding_co2=get_relative_acc(data, algorithms.standard_score_algo(np.array(data["CO2"]),
+                                                                                       algorithms.co2_lag,
+                                                                                       algorithms.co2_threshold,
+                                                                                       algorithms.co2_influence)["signals"]))
 
 def get_results_arr(filenames):
     x = ("tp", "fp", "tn", "fn")

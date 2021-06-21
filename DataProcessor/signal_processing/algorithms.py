@@ -2,19 +2,6 @@
 # https://stackoverflow.com/questions/22583391/peak-signal-detection-in-realtime-timeseries-data/43512887#43512887
 
 import numpy as np
-import matplotlib.pyplot as plt
-import csv
-import pylab
-
-# rhum settings
-rhum_lag = 100
-rhum_threshold = 4
-rhum_influence = 0.5
-# co2 settings
-co2_lag = 100
-co2_threshold = 6
-co2_influence = 0.5
-
 
 def mean_algo(y,lag, threshold):
     signals = np.zeros(len(y))
@@ -25,7 +12,6 @@ def mean_algo(y,lag, threshold):
         else:
             signals[i] = 0
     return np.asarray(mean_clean_up(signals))
-    #return np.asarray(signals)
 
 
 def mean_clean_up(signals):
@@ -42,7 +28,7 @@ def mean_clean_up(signals):
     return clean_signals
 
 
-def thresholding_algo(y, lag, threshold, influence):
+def standard_score_algo(y, lag, threshold, influence):
     signals = np.zeros(len(y))
     filteredY = np.array(y)
     avgFilter = [0]*len(y)
