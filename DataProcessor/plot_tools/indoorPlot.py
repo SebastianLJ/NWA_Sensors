@@ -73,11 +73,10 @@ def plotFiltersHum():
                                        algorithms.rhum_influence)['signals']
     acc_res = algoChecker.get_results(filename)
 
-    ax1.plot(data["time"], data["rHum"], label='indoor rhum', color='blue', linewidth=2)
-    #ax1.plot(data["time"], data["avgHum"], label='indoor avg. rhum', color='royalblue', linewidth=2)
-    #ax1.plot(data["time"], data["window"], color='red', linewidth=2)
-    ax1.plot(data["time"], list(map(lambda x: x - algoSettings.hum_threshold, data["avgHum"])), label="lower threshold",
-             color="red", linewidth=2, alpha=0.8)
+    ax1.plot(data["time"], data["rHum"], label='indoor rhum', color='lightblue', linewidth=2)
+    ax1.plot(data["time"], data["avgHum"], label='indoor avg. rhum', color='blue', linewidth=2)
+    ax1.plot(data["time"], data["window"], color='red', linewidth=2)
+    #ax1.plot(data["time"], list(map(lambda x: x - algoSettings.hum_threshold, data["avgHum"])), label="lower threshold",color="red", linewidth=2, alpha=0.8)
     ax2.plot(data["time"], data["windowState"], label='window state', color='red', linewidth=2)
     ax3.plot(data["time"], m_rhum, label='mean filter, acc: ' + str('%.2f' % acc_res["mean_rhum"]["acc"]), color='darkblue', linewidth=2)
     ax4.plot(data["time"], z_rhum, label='z-score filter, acc: ' + str('%.2f' % acc_res["thresholding_rhum"]["acc"]), color='darkgreen', linewidth=2)

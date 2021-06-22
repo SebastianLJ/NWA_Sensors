@@ -3,6 +3,15 @@
 
 import numpy as np
 
+# rhum settings for z-score
+rhum_lag = 100
+rhum_threshold = 4
+rhum_influence = 0.5
+# co2 settings for z-score
+co2_lag = 100
+co2_threshold = 6
+co2_influence = 0.5
+
 def mean_algo(y,lag, threshold):
     signals = np.zeros(len(y))
     for i in range(lag, len(y)):
