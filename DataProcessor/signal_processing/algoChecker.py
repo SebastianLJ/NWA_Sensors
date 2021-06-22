@@ -1,7 +1,6 @@
 import numpy as np
 from data_tools import logReader
-from signal_processing import algorithms
-from data_tools import algoSettings
+from signal_processing import algorithms, algoSettings
 
 # delays in seconds
 arduino_delay = 5

@@ -1,8 +1,7 @@
-from signal_processing import algorithms
+from signal_processing import algorithms, algoSettings
 from signal_processing import algoChecker
 
 from data_tools import logReader
-from data_tools import algoSettings
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
